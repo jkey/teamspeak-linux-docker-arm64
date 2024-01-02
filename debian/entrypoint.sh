@@ -4,7 +4,8 @@ set -e
 # don't start ts3server with root permissions
 if [ "$1" = 'ts3server' -a "$(id -u)" = '0' ]; then
     chown -R ts3server /var/ts3server
-    exec su-exec ts3server "$0" "$@"
+    echo "Starting ts3server as ts3server"
+    su -c "$0" "ts3server" "$@" -s /bin/bash
 fi
 
 # have the default inifile as the last parameter
@@ -90,4 +91,4 @@ EOF
 EOF
 fi
 
-exec "$@"
+exec box64 $@
