@@ -1,6 +1,9 @@
 #Download base image
 FROM arm64v8/debian:bookworm-slim
 
+LABEL Maintainer="Kurt Seiler <kurt@seiler.onl>"
+LABEL Description="Teamspeak 3 Server on arm64v8 Debian Bookworm"
+
 # Update and install dependencies
 RUN apt update && apt install -y \
     wget \
@@ -47,6 +50,7 @@ WORKDIR /var/ts3server/
 EXPOSE 9987/udp 10011 30033 
 
 COPY entrypoint.sh /opt/ts3server
+RUN chmod +x /opt/ts3server/entrypoint.sh
 
 ENTRYPOINT [ "entrypoint.sh" ]
 CMD [ "ts3server" ]
