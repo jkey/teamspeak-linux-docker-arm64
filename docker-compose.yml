@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  teamspeak:
+    image: ghcr.io/jkey/teamspeak-linux-docker-arm64:latest
+    container_name: teamspeak3
+    restart: unless-stopped
+    ports:
+      - "9987:9987/udp"  # Voice
+      - "10011:10011"     # ServerQuery
+      - "30033:30033"     # File Transfer
+    volumes:
+      - ./data:/var/ts3server
+    environment:
+      # Optional: Set server admin password
+      # TS3SERVER_SERVERADMIN_PASSWORD: "your_secure_password"
+
+      # Optional: License path
+      # TS3SERVER_LICENSEPATH: "/var/ts3server/license"
+
+      # Optional: Query protocols (raw, ssh, or both)
+      # TS3SERVER_QUERY_PROTOCOLS: "raw,ssh"
+
+      # Optional: Query port
+      # TS3SERVER_QUERY_PORT: "10011"
+
+      # Optional: File transfer port
+      # TS3SERVER_FILETRANSFER_PORT: "30033"
+
+      # Optional: Default voice port
+      # TS3SERVER_DEFAULT_VOICE_PORT: "9987"
+
+      # Optional: Database settings for MySQL/MariaDB
+      # TS3SERVER_DB_PLUGIN: "ts3db_mariadb"
+      # TS3SERVER_DB_HOST: "mariadb"
+      # TS3SERVER_DB_PORT: "3306"
+      # TS3SERVER_DB_USER: "teamspeak"
+      # TS3SERVER_DB_PASSWORD: "password"
+      # TS3SERVER_DB_NAME: "teamspeak"
+      # TS3SERVER_DB_WAITUNTILREADY: "30"
+
+  # Optional: MariaDB for persistent database
+  # Uncomment to use MariaDB instead of SQLite
+  # mariadb:
+  #   image: mariadb:latest
+  #   container_name: teamspeak-db
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "root_password"
+  #     MYSQL_DATABASE: "teamspeak"
+  #     MYSQL_USER: "teamspeak"
+  #     MYSQL_PASSWORD: "password"
+  #   volumes:
+  #     - ./mariadb:/var/lib/mysql
