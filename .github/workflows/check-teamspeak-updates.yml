@@ -24,25 +24,24 @@ jobs:
           CURRENT_VERSION=$(grep -oP 'teamspeak3-server_linux_amd64-\K[0-9]+\.[0-9]+\.[0-9]+' debian/Dockerfile | head -1)
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
-          # Fetch latest version from TeamSpeak website
-          LATEST_VERSION=$(curl -sL https://www.teamspeak.com/en/downloads/ | grep -oP 'Server 64-bit \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          # Fetch latest version from TeamSpeak JSON API
+          JSON_DATA=$(curl -sL https://www.teamspeak.com/versions/server.json)
+
+          LATEST_VERSION=$(echo "$JSON_DATA" | jq -r '.linux.x86_64.version')
+          CHECKSUM=$(echo "$JSON_DATA" | jq -r '.linux.x86_64.checksum')
+          DOWNLOAD_URL=$(echo "$JSON_DATA" | jq -r '.linux.x86_64.mirrors["teamspeak.com"]')
+
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
+          echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
 
           echo "Current version: $CURRENT_VERSION"
           echo "Latest version: $LATEST_VERSION"
+          echo "Download URL: $DOWNLOAD_URL"
+          echo "Checksum: $CHECKSUM"
 
           if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
             echo "update_available=true" >> $GITHUB_OUTPUT
-
-            # Get download URL and checksum
-            DOWNLOAD_URL="https://files.teamspeak-services.com/releases/server/${LATEST_VERSION}/teamspeak3-server_linux_amd64-${LATEST_VERSION}.tar.bz2"
-
-            # Download and calculate checksum
-            wget -q "$DOWNLOAD_URL" -O /tmp/ts3server.tar.bz2
-            CHECKSUM=$(sha256sum /tmp/ts3server.tar.bz2 | awk '{print $1}')
-
-            echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
-            echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
           else
             echo "update_available=false" >> $GITHUB_OUTPUT
           fi
