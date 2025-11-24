@@ -38,6 +38,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Extract TeamSpeak version from Dockerfile
+        id: ts-version
+        run: |
+          TS_VERSION=$(grep -oP 'teamspeak3-server_linux_amd64-\K[0-9]+\.[0-9]+\.[0-9]+' debian/Dockerfile | head -1)
+          echo "version=$TS_VERSION" >> $GITHUB_OUTPUT
+          echo "TeamSpeak Version: $TS_VERSION"
+
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -52,12 +59,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=${{ steps.ts-version.outputs.version }},enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix={{branch}}-
 
       - name: Build and push Docker image
