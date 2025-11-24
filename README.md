@@ -22,10 +22,17 @@ docker run -d \
 
 ## 📦 Available Tags
 
-- `latest` - Latest build from main branch
-- `vX.X.X` - Specific version tags
-- `main` - Latest build from main branch
-- `<sha>` - Specific commit SHA
+Images are automatically tagged with the TeamSpeak version from the Dockerfile:
+
+- `latest` - Latest stable build from main branch
+- `3.13.7` - Specific TeamSpeak version (automatically extracted from Dockerfile)
+- `main` - Latest build from main branch (may be unstable)
+- `<sha>` - Specific commit SHA for reproducible builds
+
+**Example: Pin to a specific TeamSpeak version:**
+```bash
+docker pull ghcr.io/jkey/teamspeak-linux-docker-arm64:3.13.7
+```
 
 ## 🔧 Configuration
 
